@@ -2,6 +2,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import multer from 'multer'
 import cors from 'cors'
+import fs from 'fs'
 
 import { registerValidation, loginValidation, collectionCreateValidation } from './validation/validations.js'
 import checkAuth from './utils/checkAuth.js'
@@ -10,7 +11,7 @@ import { create, getAll, getOne, remove, update } from './controllers/Collection
 import handleValidationErrors from './utils/handleValidationErrors.js'
 
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect('mongodb+srv://admin:262612@cluster.vdjrmmt.mongodb.net/')
   .then(() => console.log('DB works'))
   .catch((err) => console.log('DB error', err))
 
@@ -18,6 +19,9 @@ const app = express()
 
 const storage = multer.diskStorage({
   destination: (_, __, cb) => {
+    if(!fs.existsSync('uploads')) {
+      fs.mkdirSync('uploads')
+    }
     cb(null, 'uploads')
   },
   filename: (_, file, cb) => {
@@ -42,12 +46,12 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
 })
 
 app.get('/collections', getAll)
-app.get('/collections:id', getOne)
+app.get('/collections/:id', getOne)
 app.post('/collections', checkAuth, collectionCreateValidation, handleValidationErrors, create)
-app.delete('/collections:id', checkAuth, remove)
-app.patch('/collections:id', checkAuth, collectionCreateValidation, handleValidationErrors, update)
+app.delete('/collections/:id', checkAuth, remove)
+app.patch('/collections/:id', checkAuth, collectionCreateValidation, handleValidationErrors, update)
 
-app.listen(process.env.PORT || 4444, (err) => {
+app.listen(4444, (err) => {
   if(err) {
     return console.log(err)
   }
