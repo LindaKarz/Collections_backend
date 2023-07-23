@@ -11,7 +11,7 @@ import { create, getAll, getOne, remove, update } from './controllers/Collection
 import handleValidationErrors from './utils/handleValidationErrors.js'
 
 mongoose
-  .connect('mongodb+srv://admin:262612@cluster.vdjrmmt.mongodb.net/')
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log('DB works'))
   .catch((err) => console.log('DB error', err))
 
@@ -51,7 +51,7 @@ app.post('/collections', checkAuth, collectionCreateValidation, handleValidation
 app.delete('/collections/:id', checkAuth, remove)
 app.patch('/collections/:id', checkAuth, collectionCreateValidation, handleValidationErrors, update)
 
-app.listen(4444, (err) => {
+app.listen(process.env.PORT || 4444, (err) => {
   if(err) {
     return console.log(err)
   }
